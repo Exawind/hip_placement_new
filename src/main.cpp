@@ -21,7 +21,7 @@ void print_kokkos_configuration()
 
 #if defined(KOKKOS_ENABLE_CUDA) || defined(KOKKOS_ENABLE_HIP)
     std::stringstream ss;
-    //Kokkos::DefaultExecutionSpace::print_configuration(ss);
+    Kokkos::DefaultExecutionSpace{}.print_configuration(ss);
     const std::string& sinfo = ss.str();
     if (!sinfo.empty()) {
         std::cout << "Kokkos default execution space: " << std::endl;
@@ -137,11 +137,6 @@ void test_fake_field_placement_new()
     localFinished = 1;
   }, constructionFinished);
 
-  if (constructionFinished==1)
-	  printf("Construction Test Passed!\n");
-  else
-	  printf("Construction Test Failed!\n");
-
   int numFromDevice = 0;
   printf("about to call parallel_reduce for access check\n");
   Kokkos::parallel_reduce(1, KOKKOS_LAMBDA(const unsigned& i, int& localNum) {
@@ -149,6 +144,11 @@ void test_fake_field_placement_new()
   }, numFromDevice);
 
   Kokkos::kokkos_free<MemSpace>(devicePtr);
+
+  if (constructionFinished==1)
+	  printf("\nConstruction Test Passed!\n");
+  else
+	  printf("\nConstruction Test Failed!\n");
 
   if (numFromDevice==42)
 	  printf("Test Passed!\n");

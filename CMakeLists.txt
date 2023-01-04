@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL
 
 option(EXAWIND_USE_EXTERNAL_KOKKOS "Use external Kokkos installation" OFF)
 option(EXAWIND_TEST_PLACEMENT_NEW "Activate testing placement new functions" ON)
-
+option(GPU_MAX_THREADS_PER_BLOCK "Compile with --gpu-max-threads-per-block=128" OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

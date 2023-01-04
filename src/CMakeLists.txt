@@ -1,7 +1,8 @@
 if (EXAWIND_TEST_PLACEMENT_NEW)
   target_compile_definitions(exw_placement_new PRIVATE EXAWIND_TEST_PLACEMENT_NEW)
 endif()
-
-target_compile_options(exw_placement_new PUBLIC $<$<COMPILE_LANGUAGE:CXX>:--gpu-max-threads-per-block=128>)
+if (GPU_MAX_THREADS_PER_BLOCK)
+	target_compile_options(exw_placement_new PUBLIC $<$<COMPILE_LANGUAGE:CXX>:--gpu-max-threads-per-block=128>)
+endif()
 target_sources(exw_placement_new PRIVATE main.cpp)
 target_link_libraries(exw_placement_new PRIVATE Kokkos::kokkos)

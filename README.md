@@ -8,7 +8,7 @@ git clone --recursive https://github.com/exawind/hip_placement_new.git
 # Create build directory
 cd hip_placement_new
 
-# Configure and build for host
+# Configure and build for hip
 mkdir build_hip
 cd build_hip
 

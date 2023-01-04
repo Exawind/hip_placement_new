@@ -1,3 +1,6 @@
+# ON crusher
+module load rocm/5.4.0
+
 # Clone codebase
 git clone --recurse-submodules https://github.com/exawind/hip_placement_new.git
 
@@ -14,5 +17,5 @@ cd build_hip
 # compile
 make -j 8
 
-# Run executable
+# Run executable on an interactive node
 ./exw_placement_new

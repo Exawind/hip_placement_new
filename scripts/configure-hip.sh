@@ -15,7 +15,7 @@ placement_new_configure ()
         -DKokkos_ENABLE_HIP=ON
         -DKokkos_ENABLE_OPENMPTARGET=OFF
         -DKokkos_ARCH_VEGA90A=ON
- 		  -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=ON
+        -DKokkos_ENABLE_HIP_RELOCATABLE_DEVICE_CODE=OFF
         ${extra_args}
         ${PLACEMENT_NEW_SOURCE_DIR:-..}
     )

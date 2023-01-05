@@ -113,6 +113,13 @@ void test_field_placement_new()
   MyTestDeviceClass hostObj;
   hostObj.num = 42;
 
+  /*
+  hipError_t err = hipDeviceSetLimit(hipLimitMallocHeapSize, 16384);
+  if (err != hipSuccess) {
+     printf("%s %s %d : Failure %s in hipDeviceSetLimit\n",
+     __FILE__,__FUNCTION__,__LINE__,hipGetErrorString(err));
+  }
+  */
   printf("sizeof(MyTestDeviceClass): %lu, sizeof(TestField): %lu\n", sizeof(MyTestDeviceClass), sizeof(TestField<double>));
   std::string debugName("MyTestDeviceClass");
   MyTestDeviceClass* devicePtr = static_cast<MyTestDeviceClass*>(Kokkos::kokkos_malloc<MemSpace>(debugName, sizeof(MyTestDeviceClass)));
@@ -120,11 +127,17 @@ void test_field_placement_new()
   int constructionFinished = 0;
   printf("about to call parallel_reduce for placement new\n");
   Kokkos::parallel_reduce(1, KOKKOS_LAMBDA(const unsigned& i, int& localFinished) {
-    printf("before placement-new\n");
-    new (devicePtr) MyTestDeviceClass(hostObj);
-    printf("after placement-new\n");
+    printf("HERE before placement-new\n");
+	 new (devicePtr) MyTestDeviceClass(hostObj);
+    printf("HERE after placement-new\n");
     localFinished = 1;
   }, constructionFinished);
+
+  Kokkos::fence();
+
+  auto e = hipDeviceSynchronize();
+  std::cout << "Line " << __LINE__ << " error( " << hipGetErrorName(e)
+			  << "): " << hipGetErrorString(e) << std::endl;
 
   int numFromDevice = 0;
   printf("about to call parallel_reduce for access check\n");
@@ -132,12 +145,18 @@ void test_field_placement_new()
     localNum = devicePtr->get_num();
   }, numFromDevice);
 
+  Kokkos::fence();
+
+  auto f = hipDeviceSynchronize();
+  std::cout << "Line " << __LINE__ << " error( " << hipGetErrorName(f)
+			  << "): " << hipGetErrorString(f) << std::endl;
+
   Kokkos::kokkos_free<MemSpace>(devicePtr);
 
   if (constructionFinished==1)
-	  printf("\nConstruction Test Passed!\n");
+	  printf("\nHERE Construction Test Passed!\n");
   else
-	  printf("\nConstruction Test Failed!\n");
+	  printf("\nHERE Construction Test Failed!\n");
 
   if (numFromDevice==42)
 	  printf("Test Passed!\n");

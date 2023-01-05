@@ -9,6 +9,7 @@ placement_new_configure ()
         -DCMAKE_CXX_COMPILER=$(which hipcc)
         -DCMAKE_C_COMPILER=$(which hipcc)
         -DCMAKE_CXX_STANDARD:STRING="17"
+		  -DCMAKE_CXX_FLAGS="--gpu-max-threads-per-block=128"
         -DKokkos_ENABLE_SERIAL=ON
         -DKokkos_ENABLE_OPENMP=OFF
         -DKokkos_ENABLE_CUDA=OFF

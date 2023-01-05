@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.17.0 FATAL_ERROR)
-project(ExwPlacement_New CXX)
+project(HIP_Placement_New CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL
   "Create compile commands database")
 
-option(EXAWIND_USE_EXTERNAL_KOKKOS "Use external Kokkos installation" OFF)
-option(EXAWIND_TEST_PLACEMENT_NEW "Activate testing placement new functions" ON)
-option(GPU_MAX_THREADS_PER_BLOCK "Compile with --gpu-max-threads-per-block=128" OFF)
+option(USE_EXTERNAL_KOKKOS "Use external Kokkos installation" OFF)
+option(TEST_PLACEMENT_NEW "Activate testing placement new functions" ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -17,11 +16,11 @@ FetchContent_Declare(
   GIT_TAG develop
   )
 
-if (EXAWIND_USE_EXTERNAL_KOKKOS)
+if (USE_EXTERNAL_KOKKOS)
   find_package(Kokkos REQUIRED)
 else()
   FetchContent_MakeAvailable(kokkos)
 endif()
 
-add_executable(exw_placement_new)
+add_executable(hip_placement_new)
 add_subdirectory(src)

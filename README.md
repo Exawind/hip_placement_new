@@ -14,26 +14,25 @@ cd build_hip
 
 
 ##	Passing Test
-# CMake configure step
-../scripts/configure-hip.sh -DGPU_MAX_THREADS_PER_BLOCK=OFF
+#  Open up configure-hip.sh, make sure that the line including
+# -DCMAKE_CXX_FLAGS="--gpu-max-threads-per-block=128"  is commented out with #
+../scripts/configure-hip.sh
 
 # compile
 make -j 8
 
 # Run executable on an interactive node
-./exw_placement_new
+./hip_placement_new
 
 
 ##	Failing Test
-# CMake configure step
-../scripts/configure-hip.sh -DGPU_MAX_THREADS_PER_BLOCK=ON
-
-This will compile ONLY main.cpp executable witht the flag --gpu-max-threads_per-block=128.
-You can modify the value in src/CMakeLists.txt
+#  Open up configure-hip.sh, uncomment the line including
+# -DCMAKE_CXX_FLAGS="--gpu-max-threads-per-block=128"
+../scripts/configure-hip.sh 
 
 # compile
 make -j 8
 
 # Run executable on an interactive node
-./exw_placement_new
+./hip_placement_new
 ```

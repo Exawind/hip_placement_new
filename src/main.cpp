@@ -49,34 +49,23 @@ using MemSpace = Kokkos::HostSpace;
 
 typedef Kokkos::View<unsigned*, MemSpace> UnsignedViewType;
 
-class FakeFieldBase
-{
-public:
-  KOKKOS_DEFAULTED_FUNCTION FakeFieldBase() = default;
-  KOKKOS_DEFAULTED_FUNCTION FakeFieldBase(const FakeFieldBase&) = default;
-  KOKKOS_DEFAULTED_FUNCTION FakeFieldBase(FakeFieldBase&&) = default;
-  KOKKOS_FUNCTION FakeFieldBase& operator=(const FakeFieldBase&) { return *this; }
-  KOKKOS_FUNCTION FakeFieldBase& operator=(FakeFieldBase&&) { return *this; }
-  KOKKOS_FUNCTION virtual ~FakeFieldBase() {}
-};
-
 template<typename T>
-struct FakeField : public FakeFieldBase
+struct TestField
 {
 public:
-  KOKKOS_FUNCTION FakeField()
+  KOKKOS_FUNCTION TestField()
   {
-    printf("FakeField default ctor\n");
+    printf("TestField default ctor\n");
   }
 
-  KOKKOS_FUNCTION FakeField(const FakeField<T>& src)
+  KOKKOS_FUNCTION TestField(const TestField<T>& src)
   {
-    printf("FakeField copy ctor\n");
+    printf("TestField copy ctor\n");
   }
 
-  KOKKOS_FUNCTION ~FakeField()
+  KOKKOS_FUNCTION ~TestField()
   {
-    printf("FakeField dtor\n");
+    printf("TestField dtor\n");
   }
 
   KOKKOS_FUNCTION double get_val() const { return val; }
@@ -105,34 +94,34 @@ private:
   T val = 0.0;
 };
 
-struct MyFakeDeviceClass
+struct MyTestDeviceClass
 {
-  KOKKOS_DEFAULTED_FUNCTION MyFakeDeviceClass() = default;
-  KOKKOS_FUNCTION MyFakeDeviceClass(const MyFakeDeviceClass& src)
+  KOKKOS_DEFAULTED_FUNCTION MyTestDeviceClass() = default;
+  KOKKOS_FUNCTION MyTestDeviceClass(const MyTestDeviceClass& src)
   : field(src.field), num(src.num)
   {}
-  KOKKOS_DEFAULTED_FUNCTION ~MyFakeDeviceClass() = default;
+  KOKKOS_DEFAULTED_FUNCTION ~MyTestDeviceClass() = default;
 
   KOKKOS_FUNCTION unsigned get_num() const { return num; }
 
-  FakeField<double> field;
+  TestField<double> field;
   unsigned num = 0;
 };
 
-void test_fake_field_placement_new()
+void test_field_placement_new()
 {
-  MyFakeDeviceClass hostObj;
+  MyTestDeviceClass hostObj;
   hostObj.num = 42;
 
-  printf("sizeof(MyFakeDeviceClass): %lu, sizeof(FakeField): %lu\n", sizeof(MyFakeDeviceClass), sizeof(FakeField<double>));
-  std::string debugName("MyFakeDeviceClass");
-  MyFakeDeviceClass* devicePtr = static_cast<MyFakeDeviceClass*>(Kokkos::kokkos_malloc<MemSpace>(debugName, sizeof(MyFakeDeviceClass)));
+  printf("sizeof(MyTestDeviceClass): %lu, sizeof(TestField): %lu\n", sizeof(MyTestDeviceClass), sizeof(TestField<double>));
+  std::string debugName("MyTestDeviceClass");
+  MyTestDeviceClass* devicePtr = static_cast<MyTestDeviceClass*>(Kokkos::kokkos_malloc<MemSpace>(debugName, sizeof(MyTestDeviceClass)));
 
   int constructionFinished = 0;
   printf("about to call parallel_reduce for placement new\n");
   Kokkos::parallel_reduce(1, KOKKOS_LAMBDA(const unsigned& i, int& localFinished) {
     printf("before placement-new\n");
-    new (devicePtr) MyFakeDeviceClass(hostObj);
+    new (devicePtr) MyTestDeviceClass(hostObj);
     printf("after placement-new\n");
     localFinished = 1;
   }, constructionFinished);
@@ -162,7 +151,7 @@ int main(int argc, char** argv)
     Kokkos::initialize(argc, argv);
     {
         print_kokkos_configuration();
-		  test_fake_field_placement_new();
+		  test_field_placement_new();
     }
     Kokkos::finalize();
     return 0;
